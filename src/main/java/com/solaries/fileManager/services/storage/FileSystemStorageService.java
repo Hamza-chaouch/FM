@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -56,7 +57,6 @@ public class FileSystemStorageService implements StorageService{
                 System.out.println("file.getOriginalFilename() ===>"+rootLocation.resolve(file.getOriginalFilename()));
                 SODocument soDocument = (new SODocument()).
                         setSize(file.getSize()).
-                       // setId(1l).
                         setCreatedAt(LocalDateTime.now()).
                         setName(file.getOriginalFilename()).
                         setFilePath(getPathForUpload()+"/"+file.getOriginalFilename());
@@ -107,7 +107,10 @@ public class FileSystemStorageService implements StorageService{
 
     @Override
     public Path load (String filename) {
-        return rootLocation.resolve(filename);
+
+        SODocument file = soDocumentRepository.findByName(filename);
+        System.out.println("=>>>>>>>>>>>>>  "+file);
+        return Paths.get(file.getFilePath());
     }
 
     @Override

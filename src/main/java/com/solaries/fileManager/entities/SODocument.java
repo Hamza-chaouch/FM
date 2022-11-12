@@ -12,15 +12,24 @@ import javax.persistence.Id;
 @Table
 public class SODocument {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+
     private Long id;
     private String filePath ;
     private String name;
     private LocalDateTime createdAt;
     private Long size;
 
+    public SODocument () {
+    }
 
+    public SODocument (Long id, String filePath, String name, LocalDateTime createdAt, Long size) {
+        this.id = id;
+        this.filePath = filePath;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.size = size;
+    }
 
     public String getFilePath () {
         return filePath;
@@ -65,7 +74,10 @@ public class SODocument {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId () {
         return id;
     }
+
+
 }
