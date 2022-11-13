@@ -80,4 +80,8 @@ public class SODocument {
     }
 
 
+    @Override
+    public String toString () {
+        return name;
+    }
 }

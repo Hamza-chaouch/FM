@@ -54,8 +54,8 @@ public class FileSystemStorageService implements StorageService{
 
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("file.getOriginalFilename() ===>"+rootLocation.resolve(file.getOriginalFilename()));
-                SODocument soDocument = (new SODocument()).
+
+               SODocument soDocument = (new SODocument()).
                         setSize(file.getSize()).
                         setCreatedAt(LocalDateTime.now()).
                         setName(file.getOriginalFilename()).
@@ -85,6 +85,30 @@ public class FileSystemStorageService implements StorageService{
         }
     }
 
+    public List<SODocument> loadAllFiles () {
+        return soDocumentRepository.findAll();
+    }
+
+    @Override
+    public void deleteFile (String filename) {
+        SODocument file = soDocumentRepository.findByName(filename);
+        if (file != null){
+            soDocumentRepository.delete(file);
+            deleteFileFromDisk(file);
+
+        }else{
+            throw new StorageFileNotFoundException(
+                    "Could not read file: " + filename);
+        }
+    }
+
+    private void deleteFileFromDisk(SODocument file){
+        try {
+            FileSystemUtils.deleteRecursively(Paths.get(file.getFilePath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private String getPathForUpload () {
         int yearDir = LocalDate.now().getYear();
@@ -98,10 +122,9 @@ public class FileSystemStorageService implements StorageService{
         String directoryName = getPathForUpload();
         File directory = new File(directoryName);
         if (!directory.exists()){
-           // directory.mkdirs();
+
             Files.createDirectories(Paths.get(directory.toURI()));
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
+
         }
     }
 
@@ -109,7 +132,7 @@ public class FileSystemStorageService implements StorageService{
     public Path load (String filename) {
 
         SODocument file = soDocumentRepository.findByName(filename);
-        System.out.println("=>>>>>>>>>>>>>  "+file);
+
         return Paths.get(file.getFilePath());
     }
 
